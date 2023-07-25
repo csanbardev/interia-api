@@ -32,7 +32,7 @@ router.patch('/tutorials/:id/like', userExtractor, likeTutorial)
 
 router.patch('/tutorials/:id', userExtractor, updateTutorial)
 
-router.delete('/tutorials/:id', adminAccess, deleteTutorial)
+router.delete('/tutorials/:id', userExtractor, deleteTutorial)
 
 export default router
 

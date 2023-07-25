@@ -218,11 +218,11 @@ export const likeTutorial = async (req, res) => {
 export const deleteTutorial = async (req, res) => {
   try {
 
-    const [result] = await pool.query('delete from tutorials where id = ?', [req.params.id])
+    const [result] = await pool.query('delete from tutorials where id_tutorial = ?', [req.params.id])
 
     if (result.affectedRows === 0) return res.status(404).json({ "message": "Tutorial no encontrado" })
 
-    res.status(204).json({})
+    res.status(200).json({})
   } catch (error) {
     return res.status(500).json({
       message: 'Error al eliminar tutorial',
