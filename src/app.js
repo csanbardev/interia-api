@@ -4,6 +4,7 @@ import accessRoutes from './routes/accessControl.routes.js'
 import usersRoutes from './routes/users.routes.js'
 import likeRoutes from './routes/likes.routes.js'
 import categoriesRoutes from './routes/categories.routes.js'
+import reportsRoutes from './routes/reports.routes.js'
 import cors from 'cors'
 const app = express()
 
@@ -25,6 +26,7 @@ app.use(accessRoutes)
 app.use(usersRoutes)
 app.use(categoriesRoutes)
 app.use(likeRoutes)
+app.use(reportsRoutes)
 
 app.use((req, res, next) => {
   res.status(404).json({
