@@ -4,6 +4,6 @@ import { userExtractor } from "../middleware/auth.js";
 
 const router = Router()
 
-router.post('/reports', userExtractor, createReport)
+router.post('/reports/:id', userExtractor, createReport)
 
 export default router

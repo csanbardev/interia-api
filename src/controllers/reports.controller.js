@@ -11,9 +11,10 @@ export const getReportedTutorials = async (req, res) => {
 
 export const createReport = async (req, res) => {
   try {
-    const { id_tutorial } = req.body
+    const { id } = req.params
 
-    const [rows] = await pool.query('insert into reports (id_tutorial, id_user) values(?, ?)', [id_tutorial, req.id_user])
+
+    const [rows] = await pool.query('insert into reports (id_tutorial, id_user) values(?, ?)', [id, req.id_user])
 
     res.status(200).json({})
   } catch (error) {
