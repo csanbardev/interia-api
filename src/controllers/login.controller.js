@@ -31,7 +31,8 @@ export const loginUser = async (req, res) => {
     id_user: user.id_user,
     nick: user.nick,
     token, 
-    role: user.role
+    role: user.role,
+    avatar: user.avatar
   })
 
 

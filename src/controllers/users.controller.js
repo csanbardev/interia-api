@@ -122,6 +122,38 @@ export const updateUser = async (req, res) => {
 
 }
 
+export const updateAvatar = async (req, res) => {
+  const { id } = req.params
+  
+  try {
+    const avatar  = req.file.path
+
+    if (!req.file) {
+      return res.status(400).json({"message": "No se ha dado un avatar"})
+    }
+
+    // only the admin or the property user can update
+    if (req.id_user != id && req.who !== "admin") {
+      return res.status(401).json({ message: 'No tienes acceso a la actualización' })
+    }
+
+
+
+    const [result] = await pool.query(
+      'update users set avatar = IFNULL(?, avatar) where id_user = ?',
+      [avatar, id])
+
+    if (result.affectedRows === 0) return res.status(404).json({ "message": "No se ha encontrado el usuario" })
+
+    res.sendStatus(200)
+  } catch (error) {
+    return res.status(500).json({
+      message: 'Error al actualizar avatar',
+      error
+    })
+  }
+}
+
 /**
  * Delete a certain tutorial 
  * 
