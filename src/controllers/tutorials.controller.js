@@ -84,7 +84,7 @@ export const getAllTutorials = async (req, res) => {
       return res.status(404).json({ message: 'No has indicado la categoría' })
     }
 
-    const [rows] = await pool.query("select * from tutorials where id_category=? and approved=0", [category])
+    const [rows] = await pool.query("select * from tutorials where id_category=? and approved=0 order by yb_likes desc", [category])
 
     if (rows.length <= 0) return res.status(404).json({ message: 'No hay tutoriales disponibles' })
 
@@ -132,11 +132,11 @@ export const createTutorial = async (req, res) => {
   try {
     const { url, id_category } = req.body
 
-    const { title, author, imageUrl, publishedDate } = req.videoDetails
-
+    const { title, author, imageUrl, publishedDate, ybLikes, duration } = req.videoDetails
+    
     const videoDate = extractYoutubeDate(publishedDate)
 
-    const [rows] = await pool.query('insert into tutorials (title, author, src_image, url, published_date, id_category, id_user, approved) values (?,?,?,?,?,?,?,1)', [title, author, imageUrl, url, videoDate, id_category, req.id_user])
+    const [rows] = await pool.query('insert into tutorials (title, author, src_image, url, published_date, id_category, id_user, approved, length, yb_likes) values (?,?,?,?,?,?,?,1,?,?)', [title, author, imageUrl, url, videoDate, id_category, req.id_user, duration, ybLikes])
 
     res.status(200).json({})
   } catch (error) {

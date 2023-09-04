@@ -44,20 +44,22 @@ async function getVideoDetails(url, youtube) {
 
     // Realiza la solicitud a la API de YouTube Data para obtener la información del video
     const response = await youtube.videos.list({
-      part: 'snippet',
+      part: 'snippet, statistics, contentDetails',
       id: videoId
     });
 
 
     // Extrae los datos del video de la respuesta
-    const videoData = response.data.items[0].snippet;
+    const videoData = response.data.items[0];
 
     // Obtiene el título, autor y URL de la imagen del video
-    const title = videoData.title;
-    const author = videoData.channelTitle;
-    const imageUrl = videoData.thumbnails.medium.url;
-    const description = videoData.description;
-    const publishedDate = videoData.publishedAt
+    const title = videoData.snippet.title;
+    const author = videoData.snippet.channelTitle;
+    const imageUrl = videoData.snippet.thumbnails.medium.url;
+    const description = videoData.snippet.description;
+    const publishedDate = videoData.snippet.publishedAt
+    const ybLikes = videoData.statistics.likeCount
+    const duration = parseVideoDuration(videoData.contentDetails.duration)
 
     // Devuelve los datos del video
     return {
@@ -65,13 +67,39 @@ async function getVideoDetails(url, youtube) {
       author: author,
       imageUrl: imageUrl,
       description: description,
-      publishedDate: publishedDate
-
+      publishedDate: publishedDate,
+      ybLikes: ybLikes,
+      duration: duration
     };
   } catch (error) {
     console.error('Error al obtener los detalles del video:', error.message);
     throw error;
   }
+}
+
+function parseVideoDuration(duration){
+  const matches = duration.match(/P(\d+D)?T(\d+H)?(\d+M)?(\d+S)?/);
+  let newDuration = ""
+
+  const days = parseInt(matches[1]) || 0;
+  const hours = parseInt(matches[2]) || 0;
+  const minutes = parseInt(matches[3]) || 0;
+  const seconds = parseInt(matches[4]) || 0;
+
+  if(days!==0){
+    newDuration+=days+ "d. "
+  }
+  if(hours !==0){
+    newDuration+=hours+"h. "
+  }
+  if(minutes !==0){
+    newDuration+=minutes+"m. "
+  }
+  if(seconds!==0){
+    newDuration+=seconds+"s."
+  }
+
+  return newDuration
 }
 
 function extractVideoId(url) {
