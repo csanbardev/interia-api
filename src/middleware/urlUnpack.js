@@ -1,3 +1,4 @@
+import { error } from "console"
 import { google } from "googleapis"
 import * as path from 'path'
 
@@ -27,6 +28,12 @@ export const obtainVidData = async (req, res, next) => {
 
     next()
   } catch (error) {
+    if(error.message.includes("Enlace no valido")){
+      return res.status(401).json({
+        
+      })
+    }
+
     return res.status(500).json({
       message: 'Error al obtener datos',
       error
@@ -41,6 +48,10 @@ async function getVideoDetails(url, youtube) {
   try {
     // Extrae el ID del video de la URL
     const videoId = extractVideoId(url);
+
+    if(videoId === null){
+      throw Error("Enlace no valido")
+    }
 
     // Realiza la solicitud a la API de YouTube Data para obtener la información del video
     const response = await youtube.videos.list({
