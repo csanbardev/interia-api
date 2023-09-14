@@ -10,9 +10,14 @@ export const signupUser = async (req, res) => {
   const defaultRole = "user"
 
   try {
-    const [rows] = await pool.query('insert into users (nick, password, email, role, avatar) values (?, ?, ?, ?, ?)', [nick, password, email, defaultRole, defaultAvatar])
+    const hashedPassword = bcrypt.hashSync(password, 10)
+
+
+
+    const [rows] = await pool.query('insert into users (nick, password, email, role, avatar) values (?, ?, ?, ?, ?)', [nick, hashedPassword, email, defaultRole, defaultAvatar])
 
     const userId = rows.insertId
+
 
     const userForToken = {
       id_user: userId,
