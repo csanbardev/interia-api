@@ -1,6 +1,54 @@
 import { pool } from "../db.js"
 
 
+
+
+
+export const getPendingCategories = async (req, res) => {
+  try {
+    const [rows] = await pool.query("select * from categories where pending=0")
+
+    if (rows.length <= 0) return res.status(404).json({ message: 'No hay categorías pendientes' })
+
+    res.json(rows)
+
+  } catch (error) {
+    return res.status(500).json({
+      message: 'Error al obtener categorías',
+      error
+    })
+  }
+}
+
+export const toApproveCategory = async (req, res) => {
+  try {
+    const { id } = req.params
+    const { name } = req.body
+    const avatar = req.file.path
+
+    if (!req.file) {
+      return res.status(400).json({ "message": 'No se ha dado una imagen de categoría' })
+    }
+
+    const [result] = await pool.query(
+      'update categories set category_img = IFNULL(?, category_img), name = IFNULL(?, name), pending=1 where id_category=?',
+      [avatar, name, id]
+    )
+
+    if (result.length <= 0) return res.status(404).json({ "message": "No se ha encontrado la categoría" })
+
+    return res.status(200).json({})
+
+
+  } catch (error) {
+    return res.status(500).json({
+      message: 'Error al aprobar categoría',
+      error
+    })
+  }
+}
+
+
 /**
  * Get a list of categories
  * 
