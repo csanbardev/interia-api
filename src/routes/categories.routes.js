@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createCategory, getAllCategories, getPendingCategories, toApproveCategory, updateCategory } from "../controllers/categories.controller.js";
+import { createCategory, deleteCategory, getAllCategories, getPendingCategories, toApproveCategory, updateCategory } from "../controllers/categories.controller.js";
 import { userExtractor, adminAccess } from "../middleware/auth.js";
 import { uploadImage } from "../middleware/uploadImage.js";
 
@@ -15,6 +15,8 @@ router.post('/categories', userExtractor, createCategory)
 router.patch('categories/:id', adminAccess, updateCategory)
 
 router.patch('/categories/pending/:id', adminAccess, uploadImage, toApproveCategory)
+
+router.delete('/categories/:id', adminAccess, deleteCategory)
 
 export default router
 

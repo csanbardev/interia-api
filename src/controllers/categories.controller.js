@@ -154,11 +154,12 @@ export const updateCategory = async (req, res) => {
 export const deleteCategory = async (req, res) => {
   try {
 
-    const [result] = await pool.query('delete from categories where id = ?', [req.params.id])
+    const [result] = await pool.query('delete from categories where id_category = ?', [req.params.id])
 
     if (result.affectedRows === 0) return res.status(404).json({ "message": "Categoría no encontrada" })
 
-    res.sendStatus(204)
+    res.status(200).json({})
+
   } catch (error) {
     return res.status(500).json({
       message: 'Error al eliminar categoría',
