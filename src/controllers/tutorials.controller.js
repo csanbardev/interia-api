@@ -84,7 +84,7 @@ export const getAllTutorials = async (req, res) => {
       return res.status(404).json({ message: 'No has indicado la categoría' })
     }
 
-    const [rows] = await pool.query("select * from tutorials where id_category=? and approved=0 order by yb_likes desc", [category])
+    const [rows] = await pool.query("select * from tutorials where id_category=? and approved=0 order by likes desc", [category])
 
     if (rows.length <= 0) return res.status(404).json({ message: 'No hay tutoriales disponibles' })
 
