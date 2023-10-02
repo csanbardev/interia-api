@@ -78,17 +78,30 @@ export const getAllUserTutorials = async (req, res) => {
  */
 export const getAllTutorials = async (req, res) => {
   try {
-    const { category } = req.query
+    const { category, page = 1, limit = 10 } = req.query
 
     if (category === undefined) {
       return res.status(404).json({ message: 'No has indicado la categoría' })
     }
 
-    const [rows] = await pool.query("select * from tutorials where id_category=? and approved=0 order by likes desc", [category])
+    const offset = (page - 1) * limit
+
+    const [rows] = await pool.query("select * from tutorials where id_category=? and approved=0  order by likes desc limit ? offset ?", [category, +limit, +offset])
+
+    const [totalPageData] = await pool.query("select count(*) as count from tutorials")
+
+    const totalPages = Math.ceil(+totalPageData[0]?.count / limit)
 
     if (rows.length <= 0) return res.status(404).json({ message: 'No hay tutoriales disponibles' })
 
-    res.json(rows)
+    res.json({
+      data: rows,
+      pagination: {
+        page: +page,
+        limit: +limit,
+        totalPages
+      }
+    })
   } catch (error) {
     return res.status(500).json({
       message: 'Error al obtener tutoriales',
@@ -133,7 +146,7 @@ export const createTutorial = async (req, res) => {
     const { url, id_category } = req.body
 
     const { title, author, imageUrl, publishedDate, ybLikes, duration } = req.videoDetails
-    
+
     const videoDate = extractYoutubeDate(publishedDate)
 
     const [rows] = await pool.query('insert into tutorials (title, author, src_image, url, published_date, id_category, id_user, approved, length, yb_likes) values (?,?,?,?,?,?,?,1,?,?)', [title, author, imageUrl, url, videoDate, id_category, req.id_user, duration, ybLikes])
@@ -190,7 +203,7 @@ export const likeTutorial = async (req, res) => {
       query = 'update tutorials set likes = - 1 where id_tutorial = ?'
       await deleteLikes(id, req.id_user)
 
-    }else{
+    } else {
       await addLikes(id, req.id_user)
     }
 
