@@ -5,6 +5,7 @@ import usersRoutes from './routes/users.routes.js'
 import likeRoutes from './routes/likes.routes.js'
 import categoriesRoutes from './routes/categories.routes.js'
 import reportsRoutes from './routes/reports.routes.js'
+import contactRoutes from './routes/email.routes.js'
 import cors from 'cors'
 const app = express()
 
@@ -20,7 +21,7 @@ app.use((req, res, next) => {
 
 // ROUTES
 
-
+app.use(contactRoutes)
 app.use(tutorialsRoutes)
 app.use(accessRoutes)
 app.use(usersRoutes)
