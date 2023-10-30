@@ -58,13 +58,43 @@ export const toApproveCategory = async (req, res) => {
  */
 export const getAllCategories = async (req, res) => {
   try {
-    const { page = 1, limit = 8 } = req.query
+    const { page = 1, limit = 8, name="" } = req.query
+    const offset = (page - 1) * limit
+    const params = name !== "" ? [name, +limit, +offset] : [+limit, +offset];
+
+
+    const [rows] = await pool.query(`select * from categories where pending=1 ${name===""? '':'and name like ?'} limit ? offset ?`, params)
+
+    const [totalPageData] = await pool.query(`select count(*) as count from categories where pending = 1 ${name===""? '':'and name like ?'}`, [name])
+    const totalPages = Math.ceil(+totalPageData[0]?.count / limit)
+
+    if (rows.lenght <= 0) return res.status(404).json({ message: 'No hay categorías disponibles' })
+
+    res.json({
+      data: rows,
+      pagination: {
+        page: +page,
+        limit: +limit,
+        totalPages
+      }
+    })
+  } catch (error) {
+    return res.status(500).json({
+      message: 'Error al obtener categorías',
+      error
+    })
+  }
+}
+
+export const getCategoriesByName = async (req, res) => {
+  try {
+    const { page = 1, limit = 8, name="" } = req.query
     const offset = (page - 1) * limit
 
-    
-    const [rows] = await pool.query("select * from categories where pending=1 limit ? offset ?", [+limit, +offset])
 
-    const [totalPageData] = await pool.query("select count(*) as count from categories")
+    const [rows] = await pool.query("select * from categories where pending=1 and name like ? limit ? offset ?", [name,+limit, +offset])
+
+    const [totalPageData] = await pool.query("select count(*) as count from categories where pending = 1 and name like ?", [name])
     const totalPages = Math.ceil(+totalPageData[0]?.count / limit)
 
     if (rows.lenght <= 0) return res.status(404).json({ message: 'No hay categorías disponibles' })
