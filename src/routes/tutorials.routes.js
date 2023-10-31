@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { getAllTutorials, getTutorial, deleteTutorial, updateTutorial, createTutorial, getAllUserTutorials, getPendingTutorials, likeTutorial, getLikesTutorials } from "../controllers/tutorials.controller.js"
+import { getAllTutorials, getTutorial, deleteTutorial, updateTutorial, createTutorial, getAllUserTutorials, getPendingTutorials, likeTutorial, getLikesTutorials, getLimitedTutorials } from "../controllers/tutorials.controller.js"
 import { userExtractor, adminAccess } from "../middleware/auth.js";
 import { uploadImage } from "../middleware/uploadImage.js";
 import { obtainVidData } from "../middleware/urlUnpack.js";
@@ -7,6 +7,8 @@ import { obtainVidData } from "../middleware/urlUnpack.js";
 const router = Router()
 
 router.get('/tutorials', getAllTutorials)
+
+router.get('/tutorials/filter', getLimitedTutorials)
 
 router.get('/tutorials/pending', adminAccess, getPendingTutorials)
 

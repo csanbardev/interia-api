@@ -40,6 +40,25 @@ export const getPendingTutorials = async (req, res) => {
   }
 }
 
+export const getLimitedTutorials = async (req, res) => {
+  try {
+    const { order } = req.query
+    const option = {
+      recent: "published_date",
+      likest: "likes"
+    }
+
+    const query = `select * from tutorials t where t.approved=0 order by ${option[order]} desc limit 6`
+    const [rows] = await pool.query(query)
+
+    if (rows.length <= 0) return res.status(404).json({ message: 'No hay tutoriales' })
+
+    res.json(rows)
+  } catch (error) {
+
+  }
+}
+
 
 /**
  * Get a list of tutorials from a certain user
