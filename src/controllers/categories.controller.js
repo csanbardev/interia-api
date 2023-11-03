@@ -86,6 +86,21 @@ export const getAllCategories = async (req, res) => {
   }
 }
 
+export const getAllCategoriesFull = async (req, res) => {
+  try {
+    const [rows] = await pool.query('select * from categories where pending=1')
+    if (rows.lenght <= 0) return res.status(404).json({ message: 'No hay categorías disponibles' })
+
+    res.json(rows)
+    
+  } catch (error) {
+    return res.status(500).json({
+      message: 'Error al obtener categorías',
+      error
+    })
+  }
+}
+
 export const getCategoriesByName = async (req, res) => {
   try {
     const { page = 1, limit = 8, name="" } = req.query
