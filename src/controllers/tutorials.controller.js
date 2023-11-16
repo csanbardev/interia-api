@@ -10,7 +10,7 @@ export const getLikesTutorials = async (req, res) => {
 
     // TODO: controll id_user===token.id or role===admin
 
-    const [rows] = await pool.query("select * from tutorials t inner join likes l on t.id_tutorial= l.id_tutorial and l.id_user=?", [id_user])
+    const [rows] = await pool.query("select * from t_tutorials t inner join t_likes l on t.tut_id= l.lks_tut_id and l.lks_usr_idr=?", [id_user])
 
     if (rows.length <= 0) return res.status(404).json({ message: 'No hay tutoriales' })
 
@@ -26,7 +26,7 @@ export const getLikesTutorials = async (req, res) => {
 
 export const getPendingTutorials = async (req, res) => {
   try {
-    const [rows] = await pool.query("select * from tutorials t inner join categories c on t.id_category = c.id_category where approved=1")
+    const [rows] = await pool.query("select * from t_tutorials t inner join t_categories c on t.tut__cat_id = c.cat_id where tut_approved=0")
 
     if (rows.length <= 0) return res.status(404).json({ message: 'No hay tutoriales pendientes' })
 
@@ -48,14 +48,17 @@ export const getLimitedTutorials = async (req, res) => {
       likest: "likes"
     }
 
-    const query = `select * from tutorials t where t.approved=0 order by ${option[order]} desc limit 6`
+    const query = `select * from t_tutorials t where t.tut_approved=0 order by ${option[order]} desc limit 6`
     const [rows] = await pool.query(query)
 
     if (rows.length <= 0) return res.status(404).json({ message: 'No hay tutoriales' })
 
     res.json(rows)
   } catch (error) {
-
+    return res.status(500).json({
+      message: 'Error al obtener tutoriales',
+      error
+    })
   }
 }
 
@@ -75,7 +78,7 @@ export const getAllUserTutorials = async (req, res) => {
       res.status(404).json({ message: 'No has indicado el usuario' })
     }
 
-    const [rows] = await pool.query("select * from tutorials t inner join categories c on t.id_category = c.id_category where t.id_user=?", [id_user])
+    const [rows] = await pool.query("select * from t_tutorials t inner join t_categories c on t.tut_cat_id = c.cat_id where t.tut_usr_id=?", [id_user])
 
     if (rows.length <= 0) return res.status(404).json({ message: 'No hay tutoriales disponibles' })
 
@@ -105,9 +108,9 @@ export const getAllTutorials = async (req, res) => {
 
     const offset = (page - 1) * limit
 
-    const [rows] = await pool.query("select * from tutorials where id_category=? and approved=0  order by likes desc limit ? offset ?", [category, +limit, +offset])
+    const [rows] = await pool.query("select * from t_tutorials where tut_cat_id=? and tut_approved=0  order by tut_likes desc limit ? offset ?", [category, +limit, +offset])
 
-    const [totalPageData] = await pool.query("select count(*) as count from tutorials")
+    const [totalPageData] = await pool.query("select count(*) as count from t_tutorials")
 
     const totalPages = Math.ceil(+totalPageData[0]?.count / limit)
 
@@ -139,7 +142,7 @@ export const getTutorial = async (req, res) => {
   try {
     const { id } = req.params
 
-    const [rows] = await pool.query("select * from tutorials t inner join categories c on t.id_category = c.id_category where id_tutorial=?", [id])
+    const [rows] = await pool.query("select * from t_tutorials t inner join t_categories c on t.tut__cat_id = c.cat_id where tut_id=?", [id])
 
     if (rows.length <= 0) return res.status(404).json({ message: 'El tutorial no existe' })
 
@@ -168,7 +171,7 @@ export const createTutorial = async (req, res) => {
 
     const videoDate = extractYoutubeDate(publishedDate)
 
-    const [rows] = await pool.query('insert into tutorials (title, author, src_image, url, published_date, id_category, id_user, approved, length, yb_likes) values (?,?,?,?,?,?,?,1,?,?)', [title, author, imageUrl, url, videoDate, id_category, req.id_user, duration, ybLikes])
+    const [rows] = await pool.query('insert into t_tutorials (tut_title, tut_author, tut_src_image, tut_url, tut_published_date, tut__cat_id, tut_usr_id, tut_approved, tut_length, tut_yb_likes) values (?,?,?,?,?,?,?,1,?,?)', [title, author, imageUrl, url, videoDate, id_category, req.id_user, duration, ybLikes])
 
     res.status(200).json({})
   } catch (error) {
@@ -196,7 +199,7 @@ export const updateTutorial = async (req, res) => {
     }
 
     const [result] = await pool.query(
-      'update tutorials set title = IFNULL(?, title), url = IFNULL(?, url), approved = IFNULL(?, approved), published_date = IFNULL(?, published_date), id_category = IFNULL(?, id_category), id_user = IFNULL(?, id_user), likes = IFNULL(?, likes) where id_tutorial = ?',
+      'update t_tutorials set tut_title = IFNULL(?, tut_title), tut_url = IFNULL(?, tut_url), tut_approved = IFNULL(?, tut_approved), tut_published_date = IFNULL(?, tut_published_date), tut_cat_id = IFNULL(?, tut_cat_id), tut_usr_id = IFNULL(?, tut_usr_id), tut_likes = IFNULL(?, tut_likes) where tut_id = ?',
       [title, url, approved, published_date, id_category, id_user, likes, id])
 
     if (result.affectedRows === 0) return res.status(404).json({ "message": "No se ha encontrado el tutorial" })
@@ -217,9 +220,9 @@ export const likeTutorial = async (req, res) => {
     const { likes } = req.body
 
 
-    let query = 'update tutorials set likes = + 1 where id_tutorial = ?'
+    let query = 'update t_tutorials set tut_likes = + 1 where tut_id = ?'
     if (likes < 0) {
-      query = 'update tutorials set likes = - 1 where id_tutorial = ?'
+      query = 'update t_tutorials set tut_likes = - 1 where tut_id = ?'
       await deleteLikes(id, req.id_user)
 
     } else {
@@ -250,7 +253,7 @@ export const likeTutorial = async (req, res) => {
 export const deleteTutorial = async (req, res) => {
   try {
 
-    const [result] = await pool.query('delete from tutorials where id_tutorial = ?', [req.params.id])
+    const [result] = await pool.query('delete from tut_tutorials where tut_id = ?', [req.params.id])
 
     if (result.affectedRows === 0) return res.status(404).json({ "message": "Tutorial no encontrado" })
 

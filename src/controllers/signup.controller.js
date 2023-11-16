@@ -14,7 +14,7 @@ export const signupUser = async (req, res) => {
 
 
 
-    const [rows] = await pool.query('insert into users (nick, password, email, role, avatar) values (?, ?, ?, ?, ?)', [nick, hashedPassword, email, defaultRole, defaultAvatar])
+    const [rows] = await pool.query('insert into t_users (usr_nick, usr_password, usr_email, usr_role, usr_avatar) values (?, ?, ?, ?, ?)', [nick, hashedPassword, email, defaultRole, defaultAvatar])
 
     const userId = rows.insertId
 
@@ -28,11 +28,11 @@ export const signupUser = async (req, res) => {
     const token = pkg.sign(userForToken, process.env.SECRET)
 
     return res.status(200).json({
-      id_user: userId,
-      nick,
+      usr_id: userId,
+      usr_nick,
       token,
-      role: defaultRole,
-      avatar: defaultAvatar
+      usr_role: defaultRole,
+      usr_avatar: defaultAvatar
     })
   } catch (error) {
     return res.status(500).json({
