@@ -14,7 +14,7 @@ export const loginUser = async (req, res) => {
 
   const passwordCorrect = user === undefined
     ? false
-    : await bcrypt.compare(password, user.password)
+    : await bcrypt.compare(password, user.usr_password)
 
 
   if(!(user && passwordCorrect)) return res.status(401).json({ message: 'Usuario o contraseña incorrecta' })

@@ -44,11 +44,11 @@ export const getLimitedTutorials = async (req, res) => {
   try {
     const { order } = req.query
     const option = {
-      recent: "published_date",
-      likest: "likes"
+      recent: "tut_published_date",
+      likest: "tut_likes"
     }
 
-    const query = `select * from t_tutorials t where t.tut_approved=0 order by ${option[order]} desc limit 6`
+    const query = `select * from t_tutorials t where t.tut_approved=1 order by ${option[order]} desc limit 6`
     const [rows] = await pool.query(query)
 
     if (rows.length <= 0) return res.status(404).json({ message: 'No hay tutoriales' })
@@ -108,7 +108,7 @@ export const getAllTutorials = async (req, res) => {
 
     const offset = (page - 1) * limit
 
-    const [rows] = await pool.query("select * from t_tutorials where tut_cat_id=? and tut_approved=0  order by tut_likes desc limit ? offset ?", [category, +limit, +offset])
+    const [rows] = await pool.query("select * from t_tutorials where tut_cat_id=? and tut_approved=1  order by tut_likes desc limit ? offset ?", [category, +limit, +offset])
 
     const [totalPageData] = await pool.query("select count(*) as count from t_tutorials")
 
@@ -171,7 +171,7 @@ export const createTutorial = async (req, res) => {
 
     const videoDate = extractYoutubeDate(publishedDate)
 
-    const [rows] = await pool.query('insert into t_tutorials (tut_title, tut_author, tut_src_image, tut_url, tut_published_date, tut__cat_id, tut_usr_id, tut_approved, tut_length, tut_yb_likes) values (?,?,?,?,?,?,?,1,?,?)', [title, author, imageUrl, url, videoDate, id_category, req.id_user, duration, ybLikes])
+    const [rows] = await pool.query('insert into t_tutorials (tut_title, tut_author, tut_src_image, tut_url, tut_published_date, tut_cat_id, tut_usr_id, tut_approved, tut_length, tut_yb_likes) values (?,?,?,?,?,?,?,1,?,?)', [title, author, imageUrl, url, videoDate, id_category, req.id_user, duration, ybLikes])
 
     res.status(200).json({})
   } catch (error) {

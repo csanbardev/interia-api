@@ -57,12 +57,12 @@ export const getAllCategories = async (req, res) => {
   try {
     const { page = 1, limit = 8, name="" } = req.query
     const offset = (page - 1) * limit
-    const params = cat_name !== "" ? [cat_name, +limit, +offset] : [+limit, +offset];
+    const params = name !== "" ? [name, +limit, +offset] : [+limit, +offset];
 
 
-    const [rows] = await pool.query(`select * from t_categories where cat_pending=0 ${cat_name===""? '':'and cat_name like ?'} limit ? offset ?`, params)
+    const [rows] = await pool.query(`select * from t_categories where cat_pending=0 ${name===""? '':'and cat_name like ?'} limit ? offset ?`, params)
 
-    const [totalPageData] = await pool.query(`select count(*) as count from t_categories where cat_pending = 0 ${cat_name===""? '':'and cat_name like ?'}`, [name])
+    const [totalPageData] = await pool.query(`select count(*) as count from t_categories where cat_pending = 0 ${name===""? '':'and cat_name like ?'}`, [name])
     const totalPages = Math.ceil(+totalPageData[0]?.count / limit)
 
     if (rows.lenght <= 0) return res.status(404).json({ message: 'No hay categorías disponibles' })
