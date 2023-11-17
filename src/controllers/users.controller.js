@@ -145,7 +145,9 @@ export const updateAvatar = async (req, res) => {
 
     if (result.affectedRows === 0) return res.status(404).json({ "message": "No se ha encontrado el usuario" })
 
-    res.sendStatus(200)
+    res.status(200).json({
+      avatar_url: avatar
+    })
   } catch (error) {
     return res.status(500).json({
       message: 'Error al actualizar avatar',
