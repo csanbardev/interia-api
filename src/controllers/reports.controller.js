@@ -29,7 +29,7 @@ export const createReport = async (req, res) => {
       return res.status(401).json({})
     }
 
-    const [rows] = await pool.query('insert into t_reports (rpt_tut_id, rpt_tut_id) values(?, ?)', [id, req.id_user])
+    const [rows] = await pool.query('insert into t_reports (rpt_tut_id, rpt_usr_id) values(?, ?)', [id, req.id_user])
 
     res.status(200).json({})
   } catch (error) {

@@ -28,11 +28,11 @@ export const signupUser = async (req, res) => {
     const token = pkg.sign(userForToken, process.env.SECRET)
 
     return res.status(200).json({
-      usr_id: userId,
-      usr_nick,
+      id_user: userId,
+      nick,
       token,
-      usr_role: defaultRole,
-      usr_avatar: defaultAvatar
+      role: defaultRole,
+      avatar: defaultAvatar
     })
   } catch (error) {
     return res.status(500).json({

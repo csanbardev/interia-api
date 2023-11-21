@@ -10,7 +10,7 @@ export const getLikesTutorials = async (req, res) => {
 
     // TODO: controll id_user===token.id or role===admin
 
-    const [rows] = await pool.query("select * from t_tutorials t inner join t_likes l on t.tut_id= l.lks_tut_id and l.lks_usr_idr=?", [id_user])
+    const [rows] = await pool.query("select * from t_tutorials t inner join t_likes l on t.tut_id= l.lks_tut_id and l.lks_usr_id=?", [id_user])
 
     if (rows.length <= 0) return res.status(404).json({ message: 'No hay tutoriales' })
 
