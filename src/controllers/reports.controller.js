@@ -3,11 +3,11 @@ import { getTutorialsById } from "../models/tutorials.model.js";
 
 export const getReportedTutorials = async (req, res) => {
   try {
-    const [rows] = await pool.query('select id_tutorial from reports')
+    const [rows] = await pool.query('select rpt_tut_id from t_reports')
     const tutorials = new Array()
     if (rows.length <= 0) res.status(404).json({})
 
-    rows.forEach(t => tutorials.push(t.id_tutorial))
+    rows.forEach(t => tutorials.push(t.rpt_tut_id))
     const tutos = await getTutorialsById(tutorials)
 
     res.json(tutos)
@@ -29,7 +29,7 @@ export const createReport = async (req, res) => {
       return res.status(401).json({})
     }
 
-    const [rows] = await pool.query('insert into reports (id_tutorial, id_user) values(?, ?)', [id, req.id_user])
+    const [rows] = await pool.query('insert into t_reports (rpt_tut_id, rpt_usr_id) values(?, ?)', [id, req.id_user])
 
     res.status(200).json({})
   } catch (error) {
@@ -42,7 +42,7 @@ export const createReport = async (req, res) => {
 
 export const deleteReport = async (req, res) => {
   try {
-    const [result] = await pool.query('delete from reports where id_tutorial = ?', [req.params.id])
+    const [result] = await pool.query('delete from t_reports where rpt_tut_id = ?', [req.params.id])
 
     if (result.affectedRows === 0) return res.status(404).json({ "message": "Tutorial no encontrado" })
 
@@ -65,7 +65,7 @@ export const deleteReport = async (req, res) => {
  */
 async function alreadyReported(id_tutorial, id_user) {
 
-  const [rows] = await pool.query("select * from reports where id_tutorial = ? and id_user = ?", [id_tutorial, id_user])
+  const [rows] = await pool.query("select * from t_reports where rpt_tut_id = ? and rpt_usr_id = ?", [id_tutorial, id_user])
 
   if (rows.length <= 0) {
     return false

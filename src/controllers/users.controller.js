@@ -11,7 +11,7 @@ import bcrypt from "bcrypt"
  */
 export const getAllUsers = async (req, res) => {
   try {
-    const [rows] = await pool.query("select * from users")
+    const [rows] = await pool.query("select * from t_users")
 
     if (rows.length <= 0) return res.status(404).json({ message: 'No hay usuarios disponibles' })
 
@@ -40,7 +40,7 @@ export const getUser = async (req, res) => {
     }
 
 
-    const [rows] = await pool.query("select * from users where id_user=?", [id])
+    const [rows] = await pool.query("select * from t_users where usr_id=?", [id])
 
     if (rows.length <= 0) return res.status(404).json({ message: 'El usuario no existe' })
     res.json(rows[0])
@@ -72,7 +72,7 @@ export const createUser = async (req, res) => {
 
     }
 
-    const [rows] = await pool.query('insert into users ( nick, password, email, role) values (?,?,?,?)', [nick, hashedPassword, email, role])
+    const [rows] = await pool.query('insert into t_users ( usr_nick, usr_password, usr_email, usr_role) values (?,?,?,?)', [nick, hashedPassword, email, role])
 
     res.sendStatus(200)
   } catch (error) {
@@ -107,7 +107,7 @@ export const updateUser = async (req, res) => {
 
 
     const [result] = await pool.query(
-      'update users set nick = IFNULL(?, nick), password = IFNULL(?, password), email = IFNULL(?, email), role = IFNULL(?, role) where id_user = ?',
+      'update t_users set usr_nick = IFNULL(?, usr_nick), usr_password = IFNULL(?, usr_password), usr_email = IFNULL(?, usr_email), usr_role = IFNULL(?, usr_role) where usr_id = ?',
       [nick, password, email, role, id])
 
     if (result.affectedRows === 0) return res.status(404).json({ "message": "No se ha encontrado el usuario" })
@@ -140,7 +140,7 @@ export const updateAvatar = async (req, res) => {
 
 
     const [result] = await pool.query(
-      'update users set avatar = IFNULL(?, avatar) where id_user = ?',
+      'update t_users set usr_avatar = IFNULL(?, usr_avatar) where usr_id = ?',
       [avatar, id])
 
     if (result.affectedRows === 0) return res.status(404).json({ "message": "No se ha encontrado el usuario" })
@@ -166,7 +166,7 @@ export const updateAvatar = async (req, res) => {
 export const deleteUser = async (req, res) => {
   try {
 
-    const [result] = await pool.query('delete from users where id_user = ?', [req.params.id])
+    const [result] = await pool.query('delete from t_users where usr_id = ?', [req.params.id])
 
     if (result.affectedRows === 0) return res.status(404).json({ "message": "Usuario no encontrado" })
 

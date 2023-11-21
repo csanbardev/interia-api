@@ -14,7 +14,7 @@ export const signupUser = async (req, res) => {
 
 
 
-    const [rows] = await pool.query('insert into users (nick, password, email, role, avatar) values (?, ?, ?, ?, ?)', [nick, hashedPassword, email, defaultRole, defaultAvatar])
+    const [rows] = await pool.query('insert into t_users (usr_nick, usr_password, usr_email, usr_role, usr_avatar) values (?, ?, ?, ?, ?)', [nick, hashedPassword, email, defaultRole, defaultAvatar])
 
     const userId = rows.insertId
 

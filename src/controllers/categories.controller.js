@@ -1,12 +1,9 @@
 import { pool } from "../db.js"
 
 
-
-
-
 export const getPendingCategories = async (req, res) => {
   try {
-    const [rows] = await pool.query("select * from categories where pending=0")
+    const [rows] = await pool.query("select * from t_categories where cat_pending=1")
 
     if (rows.length <= 0) return res.status(404).json({ message: 'No hay categorías pendientes' })
 
@@ -31,7 +28,7 @@ export const toApproveCategory = async (req, res) => {
     }
 
     const [result] = await pool.query(
-      'update categories set category_img = IFNULL(?, category_img), name = IFNULL(?, name), pending=1 where id_category=?',
+      'update t_categories set cat_img = IFNULL(?, cat_img), cat_name = IFNULL(?, cat_name), cat_pending=0 where cat_id=?',
       [avatar, name, id]
     )
 
@@ -63,9 +60,9 @@ export const getAllCategories = async (req, res) => {
     const params = name !== "" ? [name, +limit, +offset] : [+limit, +offset];
 
 
-    const [rows] = await pool.query(`select * from categories where pending=1 ${name===""? '':'and name like ?'} limit ? offset ?`, params)
+    const [rows] = await pool.query(`select * from t_categories where cat_pending=0 ${name===""? '':'and cat_name like ?'} limit ? offset ?`, params)
 
-    const [totalPageData] = await pool.query(`select count(*) as count from categories where pending = 1 ${name===""? '':'and name like ?'}`, [name])
+    const [totalPageData] = await pool.query(`select count(*) as count from t_categories where cat_pending = 0 ${name===""? '':'and cat_name like ?'}`, [name])
     const totalPages = Math.ceil(+totalPageData[0]?.count / limit)
 
     if (rows.lenght <= 0) return res.status(404).json({ message: 'No hay categorías disponibles' })
@@ -88,7 +85,7 @@ export const getAllCategories = async (req, res) => {
 
 export const getAllCategoriesFull = async (req, res) => {
   try {
-    const [rows] = await pool.query('select * from categories where pending=1')
+    const [rows] = await pool.query('select * from t_categories where cat_pending=0')
     if (rows.lenght <= 0) return res.status(404).json({ message: 'No hay categorías disponibles' })
 
     res.json(rows)
@@ -107,9 +104,9 @@ export const getCategoriesByName = async (req, res) => {
     const offset = (page - 1) * limit
 
 
-    const [rows] = await pool.query("select * from categories where pending=1 and name like ? limit ? offset ?", [name,+limit, +offset])
+    const [rows] = await pool.query("select * from t_categories where cat_pending=0 and cat_name like ? limit ? offset ?", [name,+limit, +offset])
 
-    const [totalPageData] = await pool.query("select count(*) as count from categories where pending = 1 and name like ?", [name])
+    const [totalPageData] = await pool.query("select count(*) as count from t_categories where cat_pending = 0 and cat_name like ?", [name])
     const totalPages = Math.ceil(+totalPageData[0]?.count / limit)
 
     if (rows.lenght <= 0) return res.status(404).json({ message: 'No hay categorías disponibles' })
@@ -138,7 +135,7 @@ export const getCategoriesByName = async (req, res) => {
  */
 export const getCategory = async (req, res) => {
   try {
-    const [rows] = await pool.query("select * from categories id_category=?", [req.params.id_category])
+    const [rows] = await pool.query("select * from t_categories cat_id=?", [req.params.id_category])
 
     if (rows.lenght <= 0) return res.status(404).json({ message: 'La categoría no existe' })
 
@@ -162,7 +159,7 @@ export const getCategory = async (req, res) => {
 export const createCategory = async (req, res) => {
   try {
     const { name } = req.body
-    const [rows] = await pool.query('insert into categories ( name, pending ) values (?, 0)', [name])
+    const [rows] = await pool.query('insert into t_categories ( cat_name ) values (?)', [name])
 
     res.status(200).json({})
   } catch (error) {
@@ -186,9 +183,9 @@ export const updateCategory = async (req, res) => {
 
   try {
     const [result] = await pool.query(
-      'update categories set \
-        name = IFNULL(?, name) \
-          where id_category = ?',
+      'update t_categories set \
+        cat_name = IFNULL(?, cat_name) \
+          where cat_id = ?',
       [id, name])
 
     if (result.affectedRows === 0) return res.status(404).json({ "message": "No se ha encontrado la categoría" })
@@ -213,7 +210,7 @@ export const updateCategory = async (req, res) => {
 export const deleteCategory = async (req, res) => {
   try {
 
-    const [result] = await pool.query('delete from categories where id_category = ?', [req.params.id])
+    const [result] = await pool.query('delete from t_categories where cat_id = ?', [req.params.id])
 
     if (result.affectedRows === 0) return res.status(404).json({ "message": "Categoría no encontrada" })
 
