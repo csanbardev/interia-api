@@ -220,19 +220,16 @@ export const likeTutorial = async (req, res) => {
     const { likes } = req.body
 
 
-    let query = 'update t_tutorials set tut_likes = + 1 where tut_id = ?'
+    // let query = 'update t_tutorials set tut_likes = + 1 where tut_id = ?'
     if (likes < 0) {
-      query = 'update t_tutorials set tut_likes = - 1 where tut_id = ?'
+      
       await deleteLikes(id, req.id_user)
 
     } else {
       await addLikes(id, req.id_user)
     }
 
-    const [result] = await pool.query(query, [id])
-
-    if (result.affectedRows === 0) return res.status(404).json({ "message": "No se ha encontrado el tutorial" })
-
+    
     res.status(200).json({})
 
   } catch (error) {
