@@ -171,7 +171,7 @@ export const createTutorial = async (req, res) => {
 
     const videoDate = extractYoutubeDate(publishedDate)
 
-    const [rows] = await pool.query('insert into t_tutorials (tut_title, tut_author, tut_src_image, tut_url, tut_published_date, tut_cat_id, tut_usr_id, tut_approved, tut_length, tut_yb_likes) values (?,?,?,?,?,?,?,1,?,?)', [title, author, imageUrl, url, videoDate, id_category, req.id_user, duration, ybLikes])
+    const [rows] = await pool.query('insert into t_tutorials (tut_title, tut_author, tut_src_image, tut_url, tut_published_date, tut_cat_id, tut_usr_id, tut_approved, tut_length, tut_yb_likes) values (?,?,?,?,?,?,?,0,?,?)', [title, author, imageUrl, url, videoDate, id_category, req.id_user, duration, ybLikes])
 
     res.status(200).json({})
   } catch (error) {
