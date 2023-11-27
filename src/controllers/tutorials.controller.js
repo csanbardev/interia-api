@@ -108,9 +108,9 @@ export const getAllTutorials = async (req, res) => {
 
     const offset = (page - 1) * limit
 
-    const [rows] = await pool.query("select * from t_tutorials where tut_cat_id=? and tut_approved=1  order by tut_likes desc limit ? offset ?", [category, +limit, +offset])
+    const [rows] = await pool.query("select * from t_tutorials where tut_cat_id=? and tut_approved=1 order by tut_likes desc limit ? offset ?", [category, +limit, +offset])
 
-    const [totalPageData] = await pool.query("select count(*) as count from t_tutorials")
+    const [totalPageData] = await pool.query("select count(*) as count from t_tutorials where tut_cat_id=? and tut_approved=1", [category])
 
     const totalPages = Math.ceil(+totalPageData[0]?.count / limit)
 
