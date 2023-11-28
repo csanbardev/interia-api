@@ -3,14 +3,10 @@ import { getTutorialsById } from "../models/tutorials.model.js";
 
 export const getReportedTutorials = async (req, res) => {
   try {
-    const [rows] = await pool.query('select rpt_tut_id from t_reports')
-    const tutorials = new Array()
-    if (rows.length <= 0) res.status(404).json({})
+    const [rows] = await pool.query('select t.* from t_tutorials t join t_reports r on rpt_tut_id=tut_id')
+    
 
-    rows.forEach(t => tutorials.push(t.rpt_tut_id))
-    const tutos = await getTutorialsById(tutorials)
-
-    res.json(tutos)
+    res.json(rows)
 
   } catch (error) {
     return res.status(500).json({
