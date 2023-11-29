@@ -28,7 +28,7 @@ export const getPendingTutorials = async (req, res) => {
   try {
     const [rows] = await pool.query("select * from t_tutorials t inner join t_categories c on t.tut_cat_id = c.cat_id where tut_approved=0")
 
-    if (rows.length <= 0) return res.status(404).json({ message: 'No hay tutoriales pendientes' })
+    //if (rows.length <= 0) return res.status(404).json({ message: 'No hay tutoriales pendientes' })
 
     res.json(rows)
 
