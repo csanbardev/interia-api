@@ -37,7 +37,7 @@ export const signupUser = async (req, res) => {
   } catch (error) {
     return res.status(500).json({
       message: 'Error al registrar usuario',
-      error
+      code: error.code
     })
   }
 

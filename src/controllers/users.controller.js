@@ -19,7 +19,7 @@ export const getAllUsers = async (req, res) => {
   } catch (error) {
     return res.status(500).json({
       message: 'Error al obtener usuarios',
-      error
+      code: error.code
     })
   }
 }
@@ -47,7 +47,7 @@ export const getUser = async (req, res) => {
   } catch (error) {
     return res.status(500).json({
       message: 'Error al obtener usuario',
-      error
+      code: error.code
     })
   }
 }
@@ -78,7 +78,7 @@ export const createUser = async (req, res) => {
   } catch (error) {
     return res.status(500).json({
       message: 'Error al insertar usuario',
-      error
+      code: error.code
     })
   }
 }
@@ -116,7 +116,7 @@ export const updateUser = async (req, res) => {
   } catch (error) {
     return res.status(500).json({
       message: 'Error al actualizar usuario',
-      error
+      code: error.code
     })
   }
 
@@ -151,7 +151,7 @@ export const updateAvatar = async (req, res) => {
   } catch (error) {
     return res.status(500).json({
       message: 'Error al actualizar avatar',
-      error
+      code: error.code
     })
   }
 }
@@ -175,7 +175,7 @@ export const deleteUser = async (req, res) => {
   } catch (error) {
     return res.status(500).json({
       message: 'Error al eliminar usuario',
-      error
+      code: error.code
     })
   }
 }

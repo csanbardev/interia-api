@@ -1,5 +1,4 @@
 import { pool } from "../db.js"
-import pkg from 'jsonwebtoken'
 import { extractYoutubeDate } from "../utils/dateUtils.js"
 import { addLikes, deleteLikes } from "./likes.controller.js"
 
@@ -19,7 +18,7 @@ export const getLikesTutorials = async (req, res) => {
   } catch (error) {
     return res.status(500).json({
       message: 'Error al obtener tutoriales',
-      error
+      code: error.code
     })
   }
 }
@@ -35,7 +34,7 @@ export const getPendingTutorials = async (req, res) => {
   } catch (error) {
     return res.status(500).json({
       message: 'Error al obtener tutoriales',
-      error
+      code: error.code
     })
   }
 }
@@ -57,7 +56,8 @@ export const getLimitedTutorials = async (req, res) => {
   } catch (error) {
     return res.status(500).json({
       message: 'Error al obtener tutoriales',
-      error
+      code: error.code
+
     })
   }
 }
@@ -86,7 +86,8 @@ export const getAllUserTutorials = async (req, res) => {
   } catch (error) {
     return res.status(500).json({
       message: 'Error al obtener tutoriales',
-      error
+      code: error.code
+
     })
   }
 }
@@ -129,7 +130,8 @@ export const getAllTutorials = async (req, res) => {
   } catch (error) {
     return res.status(500).json({
       message: 'Error al obtener tutoriales',
-      error
+      code: error.code
+
     })
   }
 }
@@ -152,7 +154,8 @@ export const getTutorial = async (req, res) => {
   } catch (error) {
     return res.status(500).json({
       message: 'Error al obtener tutorial',
-      error
+      code: error.code
+
     })
   }
 }
@@ -179,7 +182,7 @@ export const createTutorial = async (req, res) => {
   } catch (error) {
     return res.status(500).json({
       message: 'Error al proponer tutorial',
-      error: error.toString()
+      code: error.code
     })
   }
 }
@@ -210,7 +213,8 @@ export const updateTutorial = async (req, res) => {
   } catch (error) {
     return res.status(500).json({
       message: 'Error al actualizar tutorial',
-      error
+      code: error.code
+
     })
   }
 
@@ -224,20 +228,21 @@ export const likeTutorial = async (req, res) => {
 
     // let query = 'update t_tutorials set tut_likes = + 1 where tut_id = ?'
     if (likes < 0) {
-      
+
       await deleteLikes(id, req.id_user)
 
     } else {
       await addLikes(id, req.id_user)
     }
 
-    
+
     res.status(200).json({})
 
   } catch (error) {
     return res.status(500).json({
       message: 'Error al dar like al tutorial',
-      error
+      code: error.code
+
     })
   }
 }
@@ -260,7 +265,8 @@ export const deleteTutorial = async (req, res) => {
   } catch (error) {
     return res.status(500).json({
       message: 'Error al eliminar tutorial',
-      error
+      code: error.code
+
     })
   }
 }

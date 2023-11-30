@@ -11,7 +11,7 @@ export const getReportedTutorials = async (req, res) => {
   } catch (error) {
     return res.status(500).json({
       message: 'Error al mostrar reportes',
-      error: error.toString()
+      code: error.code
     })
   }
 }
@@ -31,7 +31,7 @@ export const createReport = async (req, res) => {
   } catch (error) {
     return res.status(500).json({
       message: 'Error al generar reporte',
-      error: error.toString()
+      code: error.code
     })
   }
 }
@@ -46,7 +46,7 @@ export const deleteReport = async (req, res) => {
   } catch (error) {
     return res.status(500).json({
       message: 'Error al eliminar reporte',
-      error
+      code: error.code
     })
   }
 }
