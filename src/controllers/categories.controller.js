@@ -65,7 +65,7 @@ export const getAllCategories = async (req, res) => {
     const [totalPageData] = await pool.query(`select count(*) as count from t_categories where cat_pending = 0 ${name===""? '':'and cat_name like ?'}`, [name])
     const totalPages = Math.ceil(+totalPageData[0]?.count / limit)
 
-    if (rows.lenght <= 0) return res.status(404).json({ message: 'No hay categorías disponibles' })
+    if (rows.length <= 0) return res.status(404).json({ message: 'No hay categorías disponibles' })
 
     res.json({
       data: rows,
